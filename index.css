@@ -30,9 +30,9 @@ p {
 .center-box {
     background-color: var(--clr-white);
 
-    display: grid;
-    justify-content: center;
-    place-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
 
     border-radius: 2rem;
     padding: 10px;
