@@ -35,6 +35,8 @@ p {
     left: 50%;
     transform: translate(-50%, -50%);
 
+    place-items: center;
+    
     border-radius: 2rem;
     padding: 10px;
     padding-top: 20px;
