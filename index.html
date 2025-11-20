@@ -11,6 +11,7 @@
 	<body>
 		<!-- Create the center box that the content sits inside of  -->
 		<div role="main" class="center-box">
+			<button id="checkout-button">Go to Checkout Page</button>
 			<!-- add the image -->
 			<img
 				class="qr-code"
@@ -28,5 +29,11 @@
 
 			<p>Hello WOrls+</p>
 		</div>
+		<script>
+			const checkoutButton = document.getElementById("checkout-button");
+			checkoutButton.addEventListener("click", () => {
+				window.location.href = "/PaymentComponent/paymentComponent.html";
+			});
+		</script>
 	</body>
 </html>
