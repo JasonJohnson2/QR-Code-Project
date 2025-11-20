@@ -35,6 +35,15 @@ Once deployed, you can access:
 - **Payment Test**: `https://your-project.pages.dev/payment-test.html`
 - **Full Payment Component**: `https://your-project.pages.dev/PaymentComponent/paymentComponent.html`
 
+## 🔧 Maintenance Mode
+
+Your site includes a maintenance mode feature! See `MAINTENANCE_MODE.md` for detailed instructions.
+
+**Quick Toggle:**
+- Edit `worker.js` line 5: Change `MAINTENANCE_MODE = false` to `true`
+- Commit and push to enable maintenance page
+- Change back to `false` to restore normal operation
+
 ## 🔑 Important Notes
 
 ### NMI API Keys

@@ -1,17 +1,132 @@
 // worker.js - Cloudflare Worker for Payment Processing
+
+// ⚙️ MAINTENANCE MODE TOGGLE
+// Set to true to show maintenance page, false to allow normal operation
+const MAINTENANCE_MODE = true;
+
 export default {
 	async fetch(request, env) {
+		// Check if maintenance mode is enabled
+		if (MAINTENANCE_MODE) {
+			return maintenancePage();
+		}
+
 		const url = new URL(request.url);
 
-		// Only handle POST requests to /api/pay
+		// Handle POST requests to /api/pay
 		if (url.pathname === "/api/pay" && request.method === "POST") {
 			return handlePayment(request, env);
 		}
 
-		// For all other requests, return 404
-		return new Response("Not Found", { status: 404 });
+		// Handle CORS preflight requests
+		if (request.method === "OPTIONS") {
+			return new Response(null, {
+				headers: {
+					"Access-Control-Allow-Origin": "*",
+					"Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+					"Access-Control-Allow-Headers": "Content-Type",
+				},
+			});
+		}
+
+		// For all other requests, serve static assets
+		return env.ASSETS.fetch(request);
 	},
 };
+
+// Maintenance page HTML
+function maintenancePage() {
+	return new Response(
+		`
+		<!DOCTYPE html>
+		<html lang="en">
+		<head>
+			<meta charset="UTF-8" />
+			<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+			<title>Site Under Maintenance</title>
+			<link
+				href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+				rel="stylesheet"
+			/>
+			<style>
+				* {
+					margin: 0;
+					padding: 0;
+					box-sizing: border-box;
+				}
+				body {
+					font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					min-height: 100vh;
+					background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+					color: white;
+					padding: 20px;
+				}
+				.container {
+					text-align: center;
+					max-width: 600px;
+					padding: 3rem 2rem;
+					background: rgba(0, 0, 0, 0.3);
+					border-radius: 20px;
+					backdrop-filter: blur(10px);
+					box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+				}
+				.icon {
+					font-size: 80px;
+					margin-bottom: 1rem;
+					animation: rotate 3s linear infinite;
+				}
+				@keyframes rotate {
+					from { transform: rotate(0deg); }
+					to { transform: rotate(360deg); }
+				}
+				h1 {
+					font-size: 2.5rem;
+					margin-bottom: 1rem;
+					font-weight: 700;
+				}
+				p {
+					font-size: 1.2rem;
+					margin-bottom: 0.8rem;
+					opacity: 0.9;
+				}
+				.time {
+					font-size: 1rem;
+					margin-top: 2rem;
+					padding: 1rem;
+					background: rgba(255, 255, 255, 0.1);
+					border-radius: 10px;
+					opacity: 0.8;
+				}
+			</style>
+		</head>
+		<body>
+			<div class="container">
+				<div class="icon">
+					<i class="fas fa-tools"></i>
+				</div>
+				<h1>Under Maintenance</h1>
+				<p>We're currently updating our payment system.</p>
+				<p>We'll be back online shortly!</p>
+				<div class="time">
+					<i class="fas fa-clock"></i>
+					Please check back soon
+				</div>
+			</div>
+		</body>
+		</html>
+	`,
+		{
+			status: 503,
+			headers: {
+				"Content-Type": "text/html; charset=utf-8",
+				"Retry-After": "3600", // Suggest retry after 1 hour
+			},
+		}
+	);
+}
 
 async function handlePayment(request, env) {
 	try {
