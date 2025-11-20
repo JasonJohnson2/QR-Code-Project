@@ -12,6 +12,7 @@
 		<!-- Create the center box that the content sits inside of  -->
 		<div role="main" class="center-box">
 			<button id="checkout-button">Go to Checkout Page</button>
+			<button id="test-button">Test Payment (CDN)</button>
 			<!-- add the image -->
 			<img
 				class="qr-code"
@@ -33,6 +34,11 @@
 			const checkoutButton = document.getElementById("checkout-button");
 			checkoutButton.addEventListener("click", () => {
 				window.location.href = "/PaymentComponent/paymentComponent.html";
+			});
+
+			const testButton = document.getElementById("test-button");
+			testButton.addEventListener("click", () => {
+				window.location.href = "/payment-test.html";
 			});
 		</script>
 	</body>
