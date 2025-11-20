@@ -1,8 +1,9 @@
 {
-  "name": "qr-code-project",
-  "compatibility_date": "2025-11-20",
-  "assets": {
-    "directory": "."
-  }
+	"name": "qr-code-project",
+	"compatibility_date": "2025-11-20",
+	"main": "worker.js",
+	"assets": {
+		"directory": ".",
+		"binding": "ASSETS"
+	}
 }
-
