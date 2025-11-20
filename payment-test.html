@@ -355,43 +355,55 @@
 								const formData = getFormData();
 								const amount = parseFloat(formData.amount);
 
-								// Simulate payment processing
-								console.log("💰 Payment Details:", {
-									token: paymentToken,
+								// Prepare payload for your backend
+								const paymentPayload = {
+									paymentToken: token,
 									amount: amount,
-									firstName: formData.first_name,
-									lastName: formData.last_name,
+									currency: "USD",
+
+									// Customer information
+									first_name: formData.first_name,
+									last_name: formData.last_name,
 									email: formData.email,
-								});
+									phone: formData.phone,
 
-								// In a real implementation, you would send this to your backend:
-								// const response = await fetch('/api/process-payment', {
-								//   method: 'POST',
-								//   headers: { 'Content-Type': 'application/json' },
-								//   body: JSON.stringify({
-								//     paymentToken: token,
-								//     amount: amount,
-								//     ...formData
-								//   })
-								// });
-
-								// Simulate API delay
-								await new Promise((resolve) => setTimeout(resolve, 2000));
-
-								// Simulate successful response
-								const mockResponse = {
-									success: true,
-									transactionId: "TEST-" + Date.now(),
-									amount: amount,
+									// Billing address
+									address1: formData.address1,
+									city: formData.city,
+									state: formData.state,
+									zip: formData.zip,
+									country: formData.country || "US",
 								};
 
-								console.log("✅ Payment successful:", mockResponse);
-								showMessage(
-									"success",
-									`Payment successful! Transaction ID: ${mockResponse.transactionId}`
-								);
+								console.log("💰 Sending payment to backend:", paymentPayload);
 
-								return true;
+								// ACTUAL API CALL - Replace the simulated code with this:
+								const response = await fetch("/api/pay", {
+									method: "POST",
+									headers: { "Content-Type": "application/json" },
+									body: JSON.stringify(paymentPayload),
+								});
+
+								if (!response.ok) {
+									throw new Error(`HTTP error! status: ${response.status}`);
+								}
+
+								const data = await response.json();
+								console.log("✅ Backend response:", data);
+
+								if (data.success) {
+									showMessage(
+										"success",
+										`Payment successful! Transaction ID: ${data.transactionId}`
+									);
+									return true;
+								} else {
+									showMessage(
+										"error",
+										`Payment failed: ${data.error || "Unknown error"}`
+									);
+									return data.error || "Payment failed";
+								}
 							} catch (error) {
 								console.error("❌ Payment error:", error);
 								showMessage("error", `Payment error: ${error.message}`);
