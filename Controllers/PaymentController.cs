@@ -216,7 +216,7 @@ public class PaymentController : ControllerBase
             
             // Set security key (same key used for both 3DS and standard transactions in sandbox)
             // nmiRequest["security_key"] = "Kes9dc87682hQHn6JSTTs44uyvz66c56"; // Sandbox key
-            nmiRequest["security_key"] = "FaDMr6C75FG3WK76CR77R2A55cq9QG6J"; // 3DS TEST Key
+            nmiRequest["security_key"] = "Kes9dc87682hQHn6JSTTs44uyvz66c56"; // 3DS TEST Key
             
             if (is3DSTransaction)
             {
