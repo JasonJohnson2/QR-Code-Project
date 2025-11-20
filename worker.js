@@ -3,7 +3,7 @@
 // ⚙️ MAINTENANCE MODE TOGGLE
 // Set to true to show maintenance page, false to allow normal operation
 const MAINTENANCE_MODE = true;
-
+console.log("MAINTENANCE_MODE:", MAINTENANCE_MODE);
 export default {
 	async fetch(request, env) {
 		// Check if maintenance mode is enabled
