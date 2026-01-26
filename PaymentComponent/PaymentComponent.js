@@ -50,7 +50,6 @@ async function handleGooglePayPayment() {
 			// Customer information using NMI field names
 			first_name: formData.first_name || "",
 			last_name: formData.last_name || "",
-			email: formData.email || "",
 			phone: formData.phone || "",
 			company: formData.company || "",
 
@@ -112,7 +111,6 @@ async function handlePaymentWith3DS() {
 			amount: amount,
 			firstName: formData.first_name || "",
 			lastName: formData.last_name || "",
-			email: formData.email || "",
 			city: formData.city || "",
 			postalCode: formData.zip || "",
 			country: formData.country || "US",
@@ -369,7 +367,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 					// Customer information using NMI field names
 					first_name: formData.first_name || "",
 					last_name: formData.last_name || "",
-					email: formData.email || "",
 					phone: formData.phone || "",
 					company: formData.company || "",
 
@@ -412,7 +409,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 						// Customer information
 						first_name: formData.first_name || "",
 						last_name: formData.last_name || "",
-						email: formData.email || "",
 						phone: formData.phone || "",
 						company: formData.company || "",
 
