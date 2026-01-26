@@ -71,7 +71,7 @@ namespace MyWebAPI.Controllers
             _paymentLogger.LogInformation("Payment Request:\n{PaymentRequest}", paymentRequest);
             try
             {
-                var response = await httpClient.PostAsync("https://secure.networkmerchants.com/api/transact.php", content);
+                var response = await httpClient.PostAsync("https://sandbox.nmi.com/api/transact.php", content);
                 response.EnsureSuccessStatusCode();
                 var responseBody = await response.Content.ReadAsStringAsync();
 

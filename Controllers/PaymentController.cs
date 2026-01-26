@@ -233,9 +233,9 @@ public class PaymentController : ControllerBase
             var content = new FormUrlEncodedContent(nmiRequest);
 
             // Call NMI's Direct Post API
-            _logger.LogInformation("Calling NMI API at: https://secure.networkmerchants.com/api/transact.php");
+            _logger.LogInformation("Calling NMI API at: https://sandbox.nmi.com/api/transact.php");
             var response = await _httpClient.PostAsync(
-                "https://secure.networkmerchants.com/api/transact.php", 
+                "https://sandbox.nmi.com/api/transact.php", 
                 content
             );
 

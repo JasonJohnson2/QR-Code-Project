@@ -191,7 +191,7 @@ async function handlePayment(request, env) {
 
 		// Call NMI API
 		const nmiResponse = await fetch(
-			"https://secure.networkmerchants.com/api/transact.php",
+			"https://sandbox.nmi.com/api/transact.php",
 			{
 				method: "POST",
 				headers: {
