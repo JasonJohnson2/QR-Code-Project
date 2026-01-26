@@ -61,7 +61,7 @@ namespace MyWebAPI.Controllers
 
             Random rnd = new();
 
-            paymentRequest["security_key"] = _apiKey;
+            paymentRequest["security_key"] = "6Bu434n5D8Mc6g6JHurpT237Q6u3H8Qw";
             paymentRequest["order_id"] = "JasonTestNetOrder-" + rnd.Next();
             
 

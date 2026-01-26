@@ -206,7 +206,7 @@ function PaymentForm() {
       <div className="section">
         <h2>Payment Information</h2>
         <NmiPayments
-          tokenizationKey="z4ZWYx-QWAv8X-D8X4d5-5NZpD3"
+          tokenizationKey="t6nz42-7r3RDh-Z3R23S-7352z5"
           layout="multiLine"
           paymentMethods={['card', 'ach', 'apple-pay', 'google-pay']}
           expressCheckoutConfig={{
@@ -236,7 +236,7 @@ function PaymentForm() {
       {/* 3D Secure Component */}
       <NmiThreeDSecure
         ref={threeDSRef}
-        tokenizationKey="z4ZWYx-QWAv8X-D8X4d5-5NZpD3"
+        tokenizationKey="t6nz42-7r3RDh-Z3R23S-7352z5"
         modal={true}
         onComplete={async (result) => {
           console.log('3DS Complete:', result)
