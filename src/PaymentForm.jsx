@@ -31,10 +31,11 @@ function PaymentForm() {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const processPayment = async (threeDSResult = null) => {
+  // Payment processing - currently bypassing 3DS
+  const processPayment = async (token, threeDSResult = null) => {
     try {
       const payload = {
-        paymentToken,
+        paymentToken: token,
         amount: parseFloat(amount),
         currency: 'USD',
         first_name: formData.first_name,
@@ -47,7 +48,7 @@ function PaymentForm() {
         country: formData.country,
       }
 
-      // Add 3DS data if available
+      // Add 3DS data if available (for future use)
       if (threeDSResult) {
         payload.cardHolderAuth = threeDSResult.cardHolderAuth
         payload.cavv = threeDSResult.cavv
@@ -79,6 +80,39 @@ function PaymentForm() {
       setIsProcessing(false)
     }
   }
+
+  /* 
+   * 3DS Payment Handler - Uncomment to enable 3D Secure
+   * Replace the onPay handler below with this to enable 3DS for card payments
+   */
+  // const handlePayWith3DS = async (token, paymentMethod) => {
+  //   setPaymentToken(token)
+  //   setIsProcessing(true)
+  //   setStatus({ type: '', message: '' })
+  //
+  //   // Express payments (Apple Pay, Google Pay) bypass 3DS
+  //   if (paymentMethod === 'apple-pay' || paymentMethod === 'google-pay') {
+  //     await processPayment(token, null)
+  //     return true
+  //   }
+  //
+  //   // Card/ACH payments go through 3DS
+  //   threeDSRef.current?.startThreeDSecure({
+  //     paymentToken: token,
+  //     currency: 'USD',
+  //     amount: parseFloat(amount),
+  //     firstName: formData.first_name,
+  //     lastName: formData.last_name,
+  //     city: formData.city,
+  //     postalCode: formData.zip,
+  //     country: formData.country,
+  //     phone: formData.phone,
+  //     address1: formData.address1,
+  //     state: formData.state,
+  //     challengeIndicator: '04',
+  //   })
+  //   return true
+  // }
 
   return (
     <div className="payment-form">
@@ -196,44 +230,29 @@ function PaymentForm() {
             }
           }}
           onPay={async (token, paymentMethod) => {
+            // Direct payment processing (no 3DS)
+            // To enable 3DS: replace this handler with handlePayWith3DS
+            console.log('Processing payment:', paymentMethod)
             setPaymentToken(token)
             setIsProcessing(true)
             setStatus({ type: '', message: '' })
-
-            // Express payments (Apple Pay, Google Pay) bypass 3DS
-            if (paymentMethod === 'apple-pay' || paymentMethod === 'google-pay') {
-              await processPayment(null)
-              return true
-            }
-
-            // Card/ACH payments go through 3DS
-            threeDSRef.current?.startThreeDSecure({
-              paymentToken: token,
-              currency: 'USD',
-              amount: parseFloat(amount),
-              firstName: formData.first_name,
-              lastName: formData.last_name,
-              city: formData.city,
-              postalCode: formData.zip,
-              country: formData.country,
-              phone: formData.phone,
-              address1: formData.address1,
-              state: formData.state,
-              challengeIndicator: '04',
-            })
+            await processPayment(token, null)
             return true
           }}
         />
       </div>
 
-      {/* 3D Secure Component */}
+      {/* 
+       * 3D Secure Component - Keep mounted for future use
+       * Currently not triggered since onPay bypasses 3DS
+       */}
       <NmiThreeDSecure
         ref={threeDSRef}
         tokenizationKey="t6nz42-7r3RDh-Z3R23S-7352z5"
         modal={true}
         onComplete={async (result) => {
           console.log('3DS Complete:', result)
-          await processPayment(result)
+          await processPayment(paymentToken, result)
         }}
         onFailure={(error) => {
           console.error('3DS Failed:', error)
@@ -253,11 +272,10 @@ function PaymentForm() {
       )}
 
       <p className="security-note">
-        🔒 Payment secured with 3D Secure authentication
+        🔒 Secure payment processing
       </p>
     </div>
   )
 }
 
 export default PaymentForm
-
