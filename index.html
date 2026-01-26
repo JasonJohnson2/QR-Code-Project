@@ -1,45 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<link rel="stylesheet" type="text/css" href="./index.css" />
-		<title>
-			A solution to the QR code Component Challenge from Frontend Mentor
-		</title>
-	</head>
-	<!-- add in my css file -->
-
-	<body>
-		<!-- Create the center box that the content sits inside of  -->
-		<div role="main" class="center-box">
-			<button id="checkout-button">Go to Checkout Page</button>
-			<button id="test-button">Test Payment (CDN)</button>
-			<!-- add the image -->
-			<img
-				class="qr-code"
-				src="https://lh3.googleusercontent.com/k4fefL-FwM0b9pntxYYof97B3E6bLTY9cpqN0TvEJ6JRspSgJXivtqtaZ1LBbGj93dfnIph0KhUvUNtJXq3nY_EARLa_mSLv9_H_4vMOV74LD9Bwdkf4Ns5yKuTZO949e-lxL1KrXw=w2400"
-				alt="QR code "
-			/>
-
-			<!-- Add the text  -->
-			<h1>Improve your front-end skills by building projects</h1>
-
-			<p>
-				Scan the QR code to visit Frontend Mentor and take your coding skills to
-				the next level
-			</p>
-
-			<p>Hello WOrls+</p>
-		</div>
-		<script>
-			const checkoutButton = document.getElementById("checkout-button");
-			checkoutButton.addEventListener("click", () => {
-				window.location.href = "/PaymentComponent/paymentComponent.html";
-			});
-
-			const testButton = document.getElementById("test-button");
-			testButton.addEventListener("click", () => {
-				window.location.href = "/payment-test.html";
-			});
-		</script>
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Secure Checkout</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
