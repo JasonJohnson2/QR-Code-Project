@@ -31,32 +31,6 @@ function PaymentForm() {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const handlePay = () => {
-    if (!isValid || !paymentToken) {
-      setStatus({ type: 'error', message: 'Please complete the payment form' })
-      return
-    }
-
-    setIsProcessing(true)
-    setStatus({ type: '', message: '' })
-
-    // Start 3D Secure authentication
-    threeDSRef.current?.startThreeDSecure({
-      paymentToken,
-      currency: 'USD',
-      amount: parseFloat(amount),
-      firstName: formData.first_name,
-      lastName: formData.last_name,
-      city: formData.city,
-      postalCode: formData.zip,
-      country: formData.country,
-      phone: formData.phone,
-      address1: formData.address1,
-      state: formData.state,
-      challengeIndicator: '04',
-    })
-  }
-
   const processPayment = async (threeDSResult = null) => {
     try {
       const payload = {
@@ -222,13 +196,32 @@ function PaymentForm() {
             }
           }}
           onPay={async (token, paymentMethod) => {
-            // Handle express payments (Apple Pay, Google Pay) directly
+            setPaymentToken(token)
+            setIsProcessing(true)
+            setStatus({ type: '', message: '' })
+
+            // Express payments (Apple Pay, Google Pay) bypass 3DS
             if (paymentMethod === 'apple-pay' || paymentMethod === 'google-pay') {
-              setPaymentToken(token)
-              setIsProcessing(true)
               await processPayment(null)
               return true
             }
+
+            // Card/ACH payments go through 3DS
+            threeDSRef.current?.startThreeDSecure({
+              paymentToken: token,
+              currency: 'USD',
+              amount: parseFloat(amount),
+              firstName: formData.first_name,
+              lastName: formData.last_name,
+              city: formData.city,
+              postalCode: formData.zip,
+              country: formData.country,
+              phone: formData.phone,
+              address1: formData.address1,
+              state: formData.state,
+              challengeIndicator: '04',
+            })
+            return true
           }}
         />
       </div>
@@ -258,15 +251,6 @@ function PaymentForm() {
           {status.message}
         </div>
       )}
-
-      {/* Pay Button */}
-      <button
-        className="pay-button"
-        onClick={handlePay}
-        disabled={!isValid || isProcessing}
-      >
-        {isProcessing ? 'Processing...' : `Pay $${amount}`}
-      </button>
 
       <p className="security-note">
         🔒 Payment secured with 3D Secure authentication
