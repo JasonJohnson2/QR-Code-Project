@@ -13,7 +13,7 @@ export function fillCheckoutForm(doc = document) {
   // Personal Information
   setValue("#first_name", faker.person.firstName());
   setValue("#last_name", faker.person.lastName());
-  setValue("#email", "jason.johnson@nmi.com");
+  setValue("#email", "jjayson400@gmail.com");
   setValue("#phone", faker.phone.number());
   setValue("#company", faker.company.name());
 

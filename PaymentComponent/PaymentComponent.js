@@ -261,7 +261,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 			// 3DS TEST Key
 			// tokenizationKey: "z4ZWYx-QWAv8X-D8X4d5-5NZpD3",
 			// Sandbox Key
-			tokenizationKey: "Mm3Pt3-e6BCRA-329Frx-Ct5T9m",
+			tokenizationKey: "t6nz42-7r3RDh-Z3R23S-7352z5m",
 			layout: "multiLine",
 			paymentMethods: ["card", "ach", "apple-pay", "google-pay"],
 			expressCheckoutConfig: {
