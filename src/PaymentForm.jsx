@@ -85,7 +85,9 @@ function PaymentForm() {
    * 3DS Payment Handler - Uncomment to enable 3D Secure
    * Replace the onPay handler below with this to enable 3DS for card payments
    */
-  // const handlePayWith3DS = async (token, paymentMethod) => {
+  // const handlePayWith3DS = async (event) => {
+  //   const token = event.token
+  //   const paymentMethod = event.paymentMethod
   //   setPaymentToken(token)
   //   setIsProcessing(true)
   //   setStatus({ type: '', message: '' })
@@ -229,10 +231,12 @@ function PaymentForm() {
               console.log('Payment token received:', data.token)
             }
           }}
-          onPay={async (token, paymentMethod) => {
+          onPay={async (event) => {
             // Direct payment processing (no 3DS)
-            // To enable 3DS: replace this handler with handlePayWith3DS
-            console.log('Processing payment:', paymentMethod)
+            // event contains: { token, paymentMethod, ... }
+            const token = event.token
+            const paymentMethod = event.paymentMethod
+            console.log('Processing payment:', paymentMethod, 'Token:', token)
             setPaymentToken(token)
             setIsProcessing(true)
             setStatus({ type: '', message: '' })
