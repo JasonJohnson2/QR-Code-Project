@@ -1,10 +1,10 @@
 {
-	"name": "qr-code-project",
+	"name": "test-project",
 	"compatibility_date": "2025-11-20",
 	"main": "worker.js",
 	"assets": {
 		"directory": "dist",
-		"binding": "ASSETS"
+		"binding": "ASSETS",
 	},
 	"observability": {
 		"enabled": false,
@@ -13,12 +13,12 @@
 			"enabled": true,
 			"head_sampling_rate": 1,
 			"persist": true,
-			"invocation_logs": true
+			"invocation_logs": true,
 		},
 		"traces": {
 			"enabled": false,
 			"persist": true,
-			"head_sampling_rate": 1
-		}
-	}
+			"head_sampling_rate": 1,
+		},
+	},
 }

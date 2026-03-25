@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collect.js - Digital Wallets & Surcharge Test</title>
+    
+    <!-- Collect.js with Digital Wallet Configuration -->
+    <script
+        src="https://secure.nmi.com/token/Collect.js"
+        data-tokenization-key="t6nz42-7r3RDh-Z3R23S-7352z5"
+        data-variant="inline"
+        data-country="US"
+        data-price="25.00"
+        data-currency="USD"
+        data-field-ccnumber-selector="#ccnumber"
+        data-field-ccexp-selector="#ccexp"
+        data-field-cvv-selector="#cvv"
+        data-field-checkaccount-selector="#checkaccount"
+        data-field-checkaba-selector="#checkaba"
+        data-field-checkname-selector="#checkname"
+        data-field-apple-pay-selector="#applepay-button"
+        data-field-apple-pay-type="buy"
+        data-field-apple-pay-style-button-style="black"
+        data-field-apple-pay-style-height="44px"
+        data-field-apple-pay-style-border-radius="8px"
+        data-field-apple-pay-required-billing-contact-fields='["postalAddress","name"]'
+        data-field-apple-pay-contact-fields='["phone","email"]'
+        data-field-apple-pay-contact-fields-mapped-to="billing"
+        data-field-apple-pay-total-label="Total"
+        data-field-google-pay-selector="#googlepay-button"
+        data-field-google-pay-billing-address-required="true"
+        data-field-google-pay-billing-address-parameters-phone-number-required="true"
+        data-field-google-pay-billing-address-parameters-format="FULL"
+    ></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        .card {
+            border-radius: 15px;
+            border: none;
+        }
+        .card-header {
+            border-radius: 15px 15px 0 0 !important;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        /* Collect.js iframe styling */
+        .collect-field {
+            height: 44px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 0 12px;
+            background: #fff;
+        }
+        .collect-field iframe {
+            height: 100% !important;
+        }
+        
+        /* Digital Wallet Buttons */
+        .wallet-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+        .wallet-button-container {
+            flex: 1;
+            min-width: 200px;
+            min-height: 44px;
+        }
+        #applepay-button, #googlepay-button {
+            width: 100%;
+            min-height: 44px;
+        }
+        
+        /* Surcharge styling */
+        .surcharge-notice {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            display: none;
+        }
+        .surcharge-notice.visible {
+            display: block;
+        }
+        
+        /* Order summary */
+        .order-summary {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        .order-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .order-line:last-child {
+            border-bottom: none;
+        }
+        .order-total {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #198754;
+        }
+        
+        /* Card type indicator */
+        .card-type-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .card-type-credit { background: #fff3cd; color: #856404; }
+        .card-type-debit { background: #d1e7dd; color: #0f5132; }
+        .card-type-prepaid { background: #cfe2ff; color: #084298; }
+        .card-type-unknown { background: #e2e3e5; color: #41464b; }
+        
+        /* Payment tabs */
+        .payment-tabs .nav-link {
+            color: #495057;
+            border: 1px solid #dee2e6;
+            margin-right: 4px;
+            border-radius: 8px 8px 0 0;
+        }
+        .payment-tabs .nav-link.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        .tab-content {
+            border: 1px solid #dee2e6;
+            border-top: none;
+            padding: 20px;
+            border-radius: 0 0 8px 8px;
+            background: white;
+        }
+        
+        /* Debug panel */
+        .debug-panel {
+            background: #1a1a2e;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow-lg">
+                    <div class="card-header text-white text-center py-4">
+                        <h2 class="mb-0">
+                            <i class="fas fa-wallet me-2"></i>
+                            Collect.js Digital Wallet Test
+                        </h2>
+                        <p class="mb-0 mt-2 small opacity-75">
+                            Apple Pay, Google Pay & Card Type Detection with Surcharging
+                        </p>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        <form id="payment-form">
+                            <div class="row">
+                                <!-- Left Column - Customer Info -->
+                                <div class="col-lg-6">
+                                    <!-- Personal Information -->
+                                    <div class="mb-4">
+                                        <h5 class="text-primary mb-3">
+                                            <i class="fas fa-user me-2"></i>Customer Information
+                                        </h5>
+                                        <div class="row">
+                                            <div class="col-6 mb-3">
+                                                <label class="form-label">First Name</label>
+                                                <input type="text" class="form-control" id="first_name" value="John" required>
+                                            </div>
+                                            <div class="col-6 mb-3">
+                                                <label class="form-label">Last Name</label>
+                                                <input type="text" class="form-control" id="last_name" value="Doe" required>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Email</label>
+                                            <input type="email" class="form-control" id="email" value="test@example.com">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Phone</label>
+                                            <input type="tel" class="form-control" id="phone" value="555-123-4567">
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Billing Address -->
+                                    <div class="mb-4">
+                                        <h5 class="text-primary mb-3">
+                                            <i class="fas fa-map-marker-alt me-2"></i>Billing Address
+                                        </h5>
+                                        <div class="mb-3">
+                                            <label class="form-label">Address</label>
+                                            <input type="text" class="form-control" id="address1" value="123 Main St" required>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-5 mb-3">
+                                                <label class="form-label">City</label>
+                                                <input type="text" class="form-control" id="city" value="New York" required>
+                                            </div>
+                                            <div class="col-3 mb-3">
+                                                <label class="form-label">State</label>
+                                                <input type="text" class="form-control" id="state" value="NY" maxlength="2" required>
+                                            </div>
+                                            <div class="col-4 mb-3">
+                                                <label class="form-label">ZIP</label>
+                                                <input type="text" class="form-control" id="zip" value="10001" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Right Column - Payment -->
+                                <div class="col-lg-6">
+                                    <!-- Order Summary -->
+                                    <div class="mb-4">
+                                        <h5 class="text-primary mb-3">
+                                            <i class="fas fa-shopping-cart me-2"></i>Order Summary
+                                        </h5>
+                                        <div class="order-summary">
+                                            <div class="order-line">
+                                                <span>Subtotal</span>
+                                                <span id="subtotal-display">$25.00</span>
+                                            </div>
+                                            <div class="order-line surcharge-line" style="display: none;">
+                                                <span>
+                                                    Credit Card Surcharge (2.9%)
+                                                    <span class="card-type-badge card-type-credit ms-2" id="card-type-badge"></span>
+                                                </span>
+                                                <span id="surcharge-display">$0.00</span>
+                                            </div>
+                                            <div class="order-line order-total">
+                                                <span>Total</span>
+                                                <span id="total-display">$25.00</span>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <label class="form-label">Base Amount</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">$</span>
+                                                <input type="number" class="form-control" id="base-amount" value="25.00" step="0.01" min="0.01">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Express Checkout (Digital Wallets) -->
+                                    <div class="mb-4">
+                                        <h5 class="text-primary mb-3">
+                                            <i class="fas fa-bolt me-2"></i>Express Checkout
+                                        </h5>
+                                        <div class="wallet-buttons">
+                                            <div class="wallet-button-container">
+                                                <div id="applepay-button"></div>
+                                            </div>
+                                            <div class="wallet-button-container">
+                                                <div id="googlepay-button"></div>
+                                            </div>
+                                        </div>
+                                        <p class="text-muted small">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Apple Pay requires Safari on macOS/iOS with a configured wallet.
+                                            Google Pay requires Chrome with a configured Google account.
+                                        </p>
+                                    </div>
+                                    
+                                    <!-- Card/ACH Payment -->
+                                    <div class="mb-4">
+                                        <h5 class="text-primary mb-3">
+                                            <i class="fas fa-credit-card me-2"></i>Or Pay with Card/ACH
+                                        </h5>
+                                        
+                                        <!-- Payment Method Tabs -->
+                                        <ul class="nav payment-tabs" role="tablist">
+                                            <li class="nav-item">
+                                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#card-tab" type="button">
+                                                    <i class="fas fa-credit-card me-1"></i> Card
+                                                </button>
+                                            </li>
+                                            <li class="nav-item">
+                                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#ach-tab" type="button">
+                                                    <i class="fas fa-university me-1"></i> ACH
+                                                </button>
+                                            </li>
+                                        </ul>
+                                        
+                                        <div class="tab-content">
+                                            <!-- Card Payment -->
+                                            <div class="tab-pane fade show active" id="card-tab">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Card Number</label>
+                                                    <div id="ccnumber" class="collect-field"></div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6 mb-3">
+                                                        <label class="form-label">Expiration</label>
+                                                        <div id="ccexp" class="collect-field"></div>
+                                                    </div>
+                                                    <div class="col-6 mb-3">
+                                                        <label class="form-label">CVV</label>
+                                                        <div id="cvv" class="collect-field"></div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Surcharge Notice -->
+                                                <div id="surcharge-notice" class="surcharge-notice">
+                                                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                                                    <strong>Credit Card Surcharge:</strong>
+                                                    A 2.9% surcharge will be applied to credit card payments.
+                                                    <span id="surcharge-amount-notice"></span>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- ACH Payment -->
+                                            <div class="tab-pane fade" id="ach-tab">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Account Holder Name</label>
+                                                    <div id="checkname" class="collect-field"></div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Routing Number (ABA)</label>
+                                                    <div id="checkaba" class="collect-field"></div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Account Number</label>
+                                                    <div id="checkaccount" class="collect-field"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Submit Button -->
+                                    <button type="submit" id="payButton" class="btn btn-primary btn-lg w-100" disabled>
+                                        <i class="fas fa-lock me-2"></i>
+                                        Pay <span id="pay-button-amount">$25.00</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        
+                        <!-- Status Messages -->
+                        <div id="payment-messages" class="mt-4"></div>
+                        
+                        <!-- Debug Panel -->
+                        <div class="mt-4">
+                            <h6 class="text-muted">
+                                <i class="fas fa-bug me-2"></i>Debug Log
+                                <button class="btn btn-sm btn-outline-secondary ms-2" onclick="clearDebug()">Clear</button>
+                            </h6>
+                            <div id="debug-panel" class="debug-panel"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Configuration
+        const SURCHARGE_RATE = 0.029; // 2.9%
+        let currentCardCategory = null;
+        let paymentToken = null;
+        
+        // Debug logging
+        function debug(message, data = null) {
+            const panel = document.getElementById('debug-panel');
+            const timestamp = new Date().toLocaleTimeString();
+            let logEntry = `[${timestamp}] ${message}`;
+            if (data) {
+                logEntry += '\n' + JSON.stringify(data, null, 2);
+            }
+            panel.innerHTML += logEntry + '\n\n';
+            panel.scrollTop = panel.scrollHeight;
+            console.log(message, data || '');
+        }
+        
+        function clearDebug() {
+            document.getElementById('debug-panel').innerHTML = '';
+        }
+        
+        // Message display
+        function showMessage(type, message) {
+            const container = document.getElementById('payment-messages');
+            const alertClass = type === 'success' ? 'success' : type === 'info' ? 'info' : 'danger';
+            const icon = type === 'success' ? 'check-circle' : type === 'info' ? 'info-circle' : 'exclamation-triangle';
+            container.innerHTML = `
+                <div class="alert alert-${alertClass} alert-dismissible fade show">
+                    <i class="fas fa-${icon} me-2"></i>${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+        }
+        
+        // Surcharge calculation
+        function updateSurchargeUI(category) {
+            currentCardCategory = category;
+            const baseAmount = parseFloat(document.getElementById('base-amount').value) || 0;
+            let surchargeAmount = 0;
+            let finalAmount = baseAmount;
+            
+            const surchargeNotice = document.getElementById('surcharge-notice');
+            const surchargeLine = document.querySelector('.surcharge-line');
+            const cardBadge = document.getElementById('card-type-badge');
+            
+            if (category === 'credit') {
+                surchargeAmount = parseFloat((baseAmount * SURCHARGE_RATE).toFixed(2));
+                finalAmount = parseFloat((baseAmount + surchargeAmount).toFixed(2));
+                
+                surchargeNotice.classList.add('visible');
+                surchargeLine.style.display = 'flex';
+                document.getElementById('surcharge-display').textContent = `$${surchargeAmount.toFixed(2)}`;
+                document.getElementById('surcharge-amount-notice').textContent = ` ($${surchargeAmount.toFixed(2)})`;
+                
+                cardBadge.textContent = 'Credit';
+                cardBadge.className = 'card-type-badge card-type-credit ms-2';
+            } else {
+                surchargeNotice.classList.remove('visible');
+                surchargeLine.style.display = 'none';
+                
+                if (category) {
+                    cardBadge.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+                    cardBadge.className = `card-type-badge card-type-${category} ms-2`;
+                }
+            }
+            
+            document.getElementById('total-display').textContent = `$${finalAmount.toFixed(2)}`;
+            document.getElementById('pay-button-amount').textContent = `$${finalAmount.toFixed(2)}`;
+            
+            debug(`Card category detected: ${category}`, { baseAmount, surchargeAmount, finalAmount });
+        }
+        
+        // Update amounts when base amount changes
+        document.getElementById('base-amount').addEventListener('input', function() {
+            const amount = parseFloat(this.value) || 0;
+            document.getElementById('subtotal-display').textContent = `$${amount.toFixed(2)}`;
+            
+            // Update data-price attribute for Collect.js
+            const script = document.querySelector('script[data-tokenization-key]');
+            if (script) {
+                script.setAttribute('data-price', amount.toFixed(2));
+            }
+            
+            // Recalculate surcharge if we have a card category
+            if (currentCardCategory) {
+                updateSurchargeUI(currentCardCategory);
+            } else {
+                document.getElementById('total-display').textContent = `$${amount.toFixed(2)}`;
+                document.getElementById('pay-button-amount').textContent = `$${amount.toFixed(2)}`;
+            }
+        });
+        
+        // Process payment
+        async function submitPayment(token, tokenType, cardCategory) {
+            const baseAmount = parseFloat(document.getElementById('base-amount').value);
+            let finalAmount = baseAmount;
+            
+            if (cardCategory === 'credit') {
+                const surchargeAmount = parseFloat((baseAmount * SURCHARGE_RATE).toFixed(2));
+                finalAmount = parseFloat((baseAmount + surchargeAmount).toFixed(2));
+            }
+            
+            const payload = {
+                paymentToken: token,
+                amount: finalAmount,
+                currency: 'USD',
+                tokenType: tokenType,
+                cardCategory: cardCategory,
+                first_name: document.getElementById('first_name').value,
+                last_name: document.getElementById('last_name').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                address1: document.getElementById('address1').value,
+                city: document.getElementById('city').value,
+                state: document.getElementById('state').value,
+                zip: document.getElementById('zip').value,
+                country: 'US'
+            };
+            
+            debug('Submitting payment', payload);
+            
+            try {
+                const response = await fetch('/api/pay', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await response.json();
+                debug('Payment response', data);
+                
+                if (data.success) {
+                    showMessage('success', `Payment successful! Transaction ID: ${data.transactionId}`);
+                } else {
+                    showMessage('error', `Payment failed: ${data.error || 'Unknown error'}`);
+                }
+            } catch (error) {
+                debug('Payment error', { error: error.message });
+                showMessage('error', `Payment error: ${error.message}`);
+            }
+        }
+        
+        // Initialize Collect.js
+        document.addEventListener('DOMContentLoaded', function() {
+            debug('Page loaded, waiting for Collect.js...');
+            
+            // Check if CollectJS is available
+            const checkCollectJS = setInterval(function() {
+                if (typeof CollectJS !== 'undefined') {
+                    clearInterval(checkCollectJS);
+                    initializeCollectJS();
+                }
+            }, 100);
+            
+            // Timeout after 10 seconds
+            setTimeout(function() {
+                clearInterval(checkCollectJS);
+                if (typeof CollectJS === 'undefined') {
+                    debug('ERROR: Collect.js failed to load');
+                    showMessage('error', 'Payment system failed to load. Please refresh the page.');
+                }
+            }, 10000);
+        });
+        
+        function initializeCollectJS() {
+            debug('Collect.js loaded, configuring...');
+            
+            CollectJS.configure({
+                // Card field styling
+                customCss: {
+                    'border-color': '#dee2e6',
+                    'border-style': 'solid',
+                    'border-width': '1px',
+                    'border-radius': '6px',
+                    'font-size': '16px',
+                    'padding': '10px 12px',
+                    'height': '44px'
+                },
+                focusCss: {
+                    'border-color': '#667eea',
+                    'outline': 'none',
+                    'box-shadow': '0 0 0 3px rgba(102, 126, 234, 0.25)'
+                },
+                invalidCss: {
+                    'border-color': '#dc3545'
+                },
+                
+                // Validation callback
+                validationCallback: function(field, status, message) {
+                    debug(`Validation: ${field}`, { status, message });
+                    
+                    // Enable/disable pay button based on validation
+                    // This is a simplified check - you may want more robust validation
+                    if (status) {
+                        document.getElementById('payButton').disabled = false;
+                    }
+                },
+                
+                // BIN Lookup callback - fires when card number is valid
+                // This is for real-time card type detection
+                lookUpCallback: function(response) {
+                    debug('lookUpCallback - Card BIN lookup', response);
+                    
+                    if (response.category) {
+                        updateSurchargeUI(response.category);
+                        showMessage('info', `Card detected: ${response.type} (${response.category})`);
+                    }
+                },
+                
+                // Fields available callback
+                fieldsAvailableCallback: function() {
+                    debug('All payment fields are now available');
+                    showMessage('info', 'Payment form ready. Enter your payment details.');
+                },
+                
+                // Main tokenization callback - fires on form submission
+                callback: function(response) {
+                    debug('Tokenization callback', response);
+                    
+                    if (response.token) {
+                        paymentToken = response.token;
+                        const tokenType = response.tokenType || 'card';
+                        const cardCategory = response.card?.category || currentCardCategory || 'unknown';
+                        
+                        debug('Token received', { 
+                            token: response.token, 
+                            tokenType,
+                            cardCategory,
+                            cardType: response.card?.type
+                        });
+                        
+                        // Verify category one last time from the callback
+                        if (response.card?.category) {
+                            updateSurchargeUI(response.card.category);
+                        }
+                        
+                        // Submit to backend
+                        submitPayment(response.token, tokenType, cardCategory);
+                    } else {
+                        debug('Tokenization failed', response);
+                        showMessage('error', 'Failed to tokenize payment information');
+                    }
+                },
+                
+                // Timeout callback
+                timeoutCallback: function() {
+                    debug('Collect.js timeout');
+                    showMessage('error', 'Payment request timed out. Please try again.');
+                }
+            });
+            
+            debug('Collect.js configured successfully');
+            
+            // Check for Apple Pay / Google Pay availability
+            setTimeout(function() {
+                const applePayButton = document.getElementById('applepay-button');
+                const googlePayButton = document.getElementById('googlepay-button');
+                
+                if (applePayButton && applePayButton.innerHTML.trim() === '') {
+                    debug('Apple Pay button not rendered - may not be available in this browser/device');
+                } else {
+                    debug('Apple Pay button rendered');
+                }
+                
+                if (googlePayButton && googlePayButton.innerHTML.trim() === '') {
+                    debug('Google Pay button not rendered - may not be available in this browser');
+                } else {
+                    debug('Google Pay button rendered');
+                }
+            }, 2000);
+        }
+        
+        // Form submission
+        document.getElementById('payment-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            debug('Form submitted, triggering Collect.js...');
+            
+            // CollectJS.startPaymentRequest() triggers tokenization
+            if (typeof CollectJS !== 'undefined') {
+                CollectJS.startPaymentRequest();
+            } else {
+                showMessage('error', 'Payment system not ready');
+            }
+        });
+    </script>
+</body>
+</html>
